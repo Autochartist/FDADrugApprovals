@@ -1,0 +1,54 @@
+[
+    {
+        "Approval Date": "08/02/2021",
+        "Drug Name": "ARTHROTECNDA #020607",
+        "Submission": "SUPPL-39",
+        "Submission Classification": "Labeling",
+        "Submission Status": "Approval",
+        "company": {
+            "name": "PFIZER",
+            "Exchange": "NYQ",
+            "ticker": "PFE",
+            "price": "44.805 USD"
+        },
+        "uses": [
+            {
+                "about": "Diclofenac is used to relieve pain, swelling (inflammation), and joint stiffness caused by arthritis. Reducing these symptoms helps you do more of your normal daily activities. This medication is known as a nonsteroidal anti-inflammatory drug (NSAID).If you are treating a chronic condition such as arthritis, ask your doctor about non-drug treatments and/or using other medications to treat your pain. See also Warning section.",
+                "url": "https://www.webmd.com/drugs/2/drug-4284-4049/diclofenac-sodium/details",
+                "Active Ingredients": "DICLOFENAC SODIUM"
+            },
+            {
+                "about": "This medication is used to prevent stomach ulcers while you take NSAIDs (e.g., aspirin, ibuprofen, naproxen), especially if you are at risk for developing ulcers or have a history of ulcers. Misoprostol helps to decrease your risk of serious ulcer complications such as bleeding. This medication protects your stomach lining by lowering the amount of acid that comes in contact with it.This medication is also used in combination with another drug (mifepristone) to end a pregnancy (abortion).",
+                "url": "https://www.webmd.com/drugs/2/drug-6111-147/misoprostol/details",
+                "Active Ingredients": "MISOPROSTOL"
+            }
+        ],
+        "id": "08/02/2021_ARTHROTECNDA #020607_SUPPL-39_DICLOFENAC SODIUM; MISOPROSTOL_Labeling_Approval"
+    },
+    {
+        "Approval Date": "08/02/2021",
+        "Drug Name": "ORIAHNN (COPACKAGED)NDA #213388",
+        "Submission": "SUPPL-1",
+        "Submission Classification": "Labeling",
+        "Submission Status": "Approval",
+        "company": {
+            "name": "ABBVIE INC",
+            "Exchange": "NYQ",
+            "ticker": "ABBV",
+            "price": "115.23 USD"
+        },
+        "uses": [
+            {
+                "about": "This medication is a combination of 3 ingredients: relugolix, estradiol, and norethindrone. It is used by women who have not gone through menopause to help manage heavy menstrual bleeding due to uterine fibroids. Relugolix works by decreasing your body's production of certain hormones (luteinizing hormone, follicle-stimulating hormone), which leads to lower amounts of female sex hormones (estrogens). Estradiol is used to decrease bone loss caused by relugolix, while norethindrone is used to help lessen the risk of cancer of the uterus due to estradiol.",
+                "url": "https://www.webmd.com/drugs/2/drug-181563-1881/relugolix-estradiol-norethindr-tablet/details",
+                "Active Ingredients": "ELAGOLIX SODIUM,ESTRADIOL,NORETHINDRONE ACETATE"
+            },
+            {
+                "about": "This medication is used by women to help relieve moderate to severe pain due to a condition called endometriosis. Endometriosis is the growth of tissue that normally lines the inside of the womb (uterus) in a different place, such as on the outside surface of the uterus, on the ovaries, or on other organs. This condition may cause symptoms such as painful/heavy/irregular menstrual periods, pain during or after sex, or infertility. Elagolix works by decreasing your body's production of certain hormones (luteinizing hormone, follicle-stimulating hormone), which leads to lower amounts of female sex hormones (estrogens). These lower levels may help decrease some symptoms of endometriosis.",
+                "url": "https://www.webmd.com/drugs/2/drug-175714-1945/elagolix-tablet/details",
+                "Active Ingredients": "ELAGOLIX SODIUM"
+            }
+        ],
+        "id": "08/02/2021_ORIAHNN (COPACKAGED)NDA #213388_SUPPL-1_ELAGOLIX SODIUM,ESTRADIOL,NORETHINDRONE ACETATE; ELAGOLIX SODIUM_Labeling_Approval"
+    }
+]
