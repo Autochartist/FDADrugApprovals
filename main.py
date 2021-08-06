@@ -233,13 +233,14 @@ for idx, row in df.iterrows():
         r['ingredients'].append(ingredientsDic[ingredient])
     records.append(r)
 
-filename = f'{year}{month:02}{day:02}{hour:02}{minute:02}.json'
-print('# Saving results to file ',filename)
-with open(filename, 'w') as f:
-    json.dump(records, f, indent=4)
+if(len(records) > 0):
+    filename = f'{year}{month:02}{day:02}{hour:02}{minute:02}.json'
+    print('# Saving results to file ',filename)
+    with open(filename, 'w') as f:
+        json.dump(records, f, indent=4)
 
-print('# Posting to webhook ',webhook)
-r = requests.post(webhook, data = json.dumps(records, indent=4), headers={'Content-Type': 'application/json'})
+    print('# Posting to webhook ',webhook)
+    r = requests.post(webhook, data = json.dumps(records, indent=4), headers={'Content-Type': 'application/json'})
 
 print('SUCCESS')
 
