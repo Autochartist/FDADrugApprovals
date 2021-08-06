@@ -1,0 +1,14 @@
+{
+    "NATCO PHARMA LTD": {
+        "name": "NATCO PHARMA LTD",
+        "ticker": "NATCOPHARM.BO",
+        "price": "993.4 INR",
+        "exchange": "BSE"
+    },
+    "CELGENE": {
+        "name": "CELGENE",
+        "ticker": null,
+        "price": null,
+        "exchange": null
+    }
+}

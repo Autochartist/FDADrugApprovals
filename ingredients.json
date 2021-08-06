@@ -1,0 +1,12 @@
+{
+    "LENALIDOMIDE": {
+        "name": "LENALIDOMIDE",
+        "link": "https://www.webmd.com/drugs/2/drug-94823-640/lenalidomide-capsule/details",
+        "uses": "Lenalidomide is used to treat various types of cancers. It works by slowing or stopping the growth of cancer cells. It is also used to treat anemia in patients with certain blood/bone marrow disorders (myelodysplastic syndromes-MDS). Lenalidomide may lessen the need for blood transfusions.Lenalidomide is not recommended for the treatment of a certain type of cancer (chronic lymphocytic leukemia) because of the increased risk of serious heart-related side effects and death. If you have this type of cancer, talk to your doctor about the risks of using this medication."
+    },
+    "POMALIDOMIDE": {
+        "name": "POMALIDOMIDE",
+        "link": "https://www.webmd.com/drugs/2/drug-163457-1523/pomalidomide-capsule/details",
+        "uses": "Pomalidomide is used to treat certain types of cancers (such as multiple myeloma, Kaposi sarcoma). It works by slowing or stopping the growth of cancer cells."
+    }
+}

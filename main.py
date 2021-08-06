@@ -1,3 +1,4 @@
+from pprint import pprint
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -8,22 +9,16 @@ from time import sleep
 
 webhook = 'https://hooks.zapier.com/hooks/catch/2964702/bu3w9g5/'
 
+# ------------------------------------------------------------------------------------------------------------------
+
 def get_date_params():
     day= datetime.now().day
     month= datetime.now().month
     year= datetime.now().year
-
-    if day==1:
-        if month==1:
-            month=12
-            year -=1
-  
-        else:
-            month -=1
-            day= monthrange(year, month)[1]
-    else:
-        day -=1 # account always for the previous day
-    return day, month, year
+    hour = datetime.now().hour
+    minute = datetime.now().minute
+    return year, month, day, hour, minute
+# ------------------------------------------------------------------------------------------------------------------
 
 def send_request(url, payload= None):
     userAgent= 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36'
@@ -37,6 +32,7 @@ def send_request(url, payload= None):
     return response
 
 
+# ------------------------------------------------------------------------------------------------------------------
 
 def get_link(ingredient):
     url= f'https://www.webmd.com/drugs/2/search?type=drugs&query={ingredient}'
@@ -54,9 +50,8 @@ def get_link(ingredient):
         except:
             return f'https://en.wikipedia.org/wiki/{ingredient.lower()}'   
 
+# ------------------------------------------------------------------------------------------------------------------
 def get_uses(url):
-    userAgent= 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.164 Safari/537.36'
-
     response= send_request(url)
 
     soup= BeautifulSoup(response.content, features="lxml")
@@ -72,6 +67,7 @@ def get_uses(url):
     return res.strip()
 
 
+# ------------------------------------------------------------------------------------------------------------------
 def search_duck(keyword):
     url= f'https://duckduckgo.com/html/?q={"%20".join(keyword.split(" "))}%20ticker%20yahoo'
     counter= 0
@@ -110,129 +106,140 @@ def search_duck(keyword):
 
     return ticker, price, exchange
 
+# ------------------------------------------------------------------------------------------------------------------
 def get_ticker_info(ticker):
     url= f'https://query1.finance.yahoo.com/v8/finance/chart/{ticker}?region=US&lang=en-US&includePrePost=false&interval=2m&useYfid=true&range=1d&corsDomain=finance.yahoo.com&.tsrc=finance'
 
     response= send_request(url)
     meta= json.loads(response.content).get('chart').get('result')[0].get('meta')
     return meta
+
+# ------------------------------------------------------------------------------------------------------------------
 def get_price(meta): # Get Sock Price
     price= f'{meta.get("regularMarketPrice")} {meta.get("currency")}' 
     return price
+
+# ------------------------------------------------------------------------------------------------------------------
 def get_exchange(meta): # Get the Exchange symobl
     exchange= f'{meta.get("exchangeName")}' 
     return exchange        
 
-def insert_data(df): # Insert data into the records
-    records= []
-    for idx, row in df.iterrows():
 
-        ingredients= row['Active Ingredients'].split(';')
-        if len(ingredients)>1:
-            row['url']=[]
-            row['uses']=[]
-            for ingredient in row['Active Ingredients'].split(';'):
-                row['url'].append(urls[ingredient.strip()])
-                row['uses'].append(uses[urls[ingredient.strip()]])
-        else:
-            row['url']= urls[ingredients[0].strip()]
-            row['uses']= uses[urls[ingredients[0].strip()]]
-        records.append(dict(row))
-    return records
-
-day, month, year= get_date_params() # Get yesdterday's Date
+# ------------------------------------------------------------------------------------------------------------------
+def readDictionary(filename):
+    dic = {}   
+    try:
+        file = open(filename, "r")
+        dic = json.load(file)
+        file.close()
+    except FileNotFoundError:
+        dic = {}
+    return dic
 
 
-payload = {
-    'reportSelectMonth':month,
-    'reportSelectYear':year,
-    'rptName':0
-}
-url= 'https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=reportsSearch.process'
+# ------------------------------------------------------------------------------------------------------------------
+def saveDictionary(dic, filename):
+    file = open(filename, "w")
+    json.dump(dic, file, indent=4)
+    
+# ------------------------------------------------------------------------------------------------------------------
+def getFDAData(month, year):
+    payload = {
+        'reportSelectMonth':month,
+        'reportSelectYear':year,
+        'rptName':0
+    }
+    url= 'https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=reportsSearch.process'
+    response= send_request(url, payload)
+
+    df= pd.read_html(response.content)[0] # reading the table from the webpage via pandas
+    df = df[df['Submission Status']=='Approval'] # filtering only fully approved submissions
+    df = df.where(pd.notnull(df), '') # set None as empty to be able to concatinate in IDs
+    df= df.rename(columns={'Submission Classification *': 'Submission Classification'})
+    df['id'] = pd.Series(df.fillna('').values.tolist()).str.join('_')
+
+    return df
+
+# ------------------------------------------------------------------------------------------------------------------
+def filterPreviouslyProcessed(df):
+    processedDic = readDictionary("processed.json")
+    df = df[~df['id'].isin(processedDic)]   # removed previously processed results
+    newdic = df.set_index('id').T.to_dict('list')
+    processedDic = processedDic | newdic
+    saveDictionary(processedDic, "processed.json")
+    return df
+
+# ------------------------------------------------------------------------------------------------------------------
+def getActiveIngredients(df):
+    ingredientsDic = readDictionary("ingredients.json")
+    active_ingredients= []
+    [active_ingredients.extend([j.strip() for j in i.split(';')]) for i in df['Active Ingredients'].unique() ]
+    active_ingredients= list(set(active_ingredients)) # unique set of ingredients
+    for active_ingredient in active_ingredients:
+        if active_ingredient not in ingredientsDic:
+            ingredientsDic[active_ingredient] = {}
+            link = get_link(active_ingredient)
+            ingredientsDic[active_ingredient]['name'] = active_ingredient
+            ingredientsDic[active_ingredient]['link'] = link
+            ingredientsDic[active_ingredient]['uses'] = get_uses(link)
+    saveDictionary(ingredientsDic, "ingredients.json")
+    return ingredientsDic
+
+# ------------------------------------------------------------------------------------------------------------------
+def getCompanies(df):
+    companiesDic = readDictionary("companies.json")
+    companies= []
+    [companies.extend([j.strip() for j in i.split(';')]) for i in df['Company'].unique() ]
+    companies= list(set(companies)) # unique set of companies
+    for company in companies:
+        companiesDic[company] = {}
+        ticker, price, exchange = search_duck(company)
+        companiesDic[company]['name'] = company
+        companiesDic[company]['ticker'] = ticker
+        companiesDic[company]['price'] = price
+        companiesDic[company]['exchange'] = exchange
+    saveDictionary(companiesDic, "companies.json")
+    return companiesDic
+
+
+# ------------------------------------------------------------------------------------------------------------------
+year, month, day, hour, minute = get_date_params()
 
 print('# Getting data from FDA website ...')   
-response= send_request(url, payload)
-
-print('-> Data Retrieved')
-df= pd.read_html(response.content)[0] # reading the table from the webpage via pandas
-df = df[df['Submission Status']=='Approval'] # filtering only fully approved submissions
-df= df[df['Approval Date']==f'{month:02}/{day:02}/{year}'] # Filter only the dat before
-print('* Data Filtered')
-
-
+df = getFDAData(month, year)
+df = filterPreviouslyProcessed(df)
 
 print('# Getting uses url and data for the active ingredients ...')
-active_ingredients= []
-[active_ingredients.extend([j.strip() for j in i.split(';')]) for i in df['Active Ingredients'].unique() ]
-active_ingredients= list(set(active_ingredients)) # unique set of ingredients
-urls= {}
-uses= {}
+ingredientsDic = getActiveIngredients(df)
 
-# Get the uses url
-for active_ingredient in active_ingredients:
-    urls[active_ingredient]= get_link(active_ingredient)
+print('# Getting companies and their details')
+companiesDic = getCompanies(df)
 
-# Get the uses Text from the URL
-for active_ingredient,url in urls.items():
-    uses[url]= get_uses(url)
+print('# Compiling results')
+records = []
+for idx, row in df.iterrows():
+    r = {}
+    r['id'] = row['id']
+    r['approval_date'] = row['Approval Date']
+    r['drug_name'] = row['Drug Name']
+    r['submission'] = {}
+    r['submission']['name'] = row['Submission']
+    r['submission']['classification'] = row['Submission Classification']
+    r['submission']['status'] = row['Submission Status']
+    r['company'] = companiesDic[row['Company']]
+    r['ingredients'] = []
+    ingredients = [x.strip() for x in row['Active Ingredients'].split(';')]
+    for ingredient in ingredients:
+        r['ingredients'].append(ingredientsDic[ingredient])
+    records.append(r)
 
-print('-> Uses retrieved')
+filename = f'{year}{month:02}{day:02}{hour:02}{minute:02}.json'
+print('# Saving results to file ',filename)
+with open(filename, 'w') as f:
+    json.dump(records, f, indent=4)
 
-df = df.where(pd.notnull(df), '') # set None as empty to be able to concatinate in IDs
-df= df.rename(columns={'Submission Classification *': 'Submission Classification'})
+print('# Posting to webhook ',webhook)
+r = requests.post(webhook, data = json.dumps(records, indent=4), headers={'Content-Type': 'application/json'})
 
-records= insert_data(df)
-
-print('#searching company tickers via DuckduckGo ...')
-companies= set([record['Company']for record in records]) # getting a unique set of companies
-
-ticker, price, exchange= {}, {}, {}
-for company in companies:
-    ticker[company], price[company], exchange[company]= search_duck(company)
-
-for record in records:
-    record['ticker'], record['price'], record['Exchange']= ticker[record['Company']], price[record['Company']], exchange[record['Company']]
-
-print('# modifying records format')
-myrecords= []
-for record in records:
-    r= {}
-    for key in record.keys():
-        if not key.lower() in ['company', 'ticker', 'price', 'uses', 'url', 'exchange', 'active ingredients']:
-            r[key]= record[key]
-    r['company']= {}
-    r['company']['name']= record['Company']
-    r['company']['Exchange']= record['Exchange']
-    r['company']['ticker']= record['ticker']
-    r['company']['price']= record['price']
-    r['uses']= {}
-    if len(record['Active Ingredients'].split(';'))>1: # If there are multiple active ingredients
-        r['uses']=[]
-
-        for i, ingredient in enumerate(record['Active Ingredients'].split(';')):
-            d= {
-                'about': record['uses'][i],
-                'url': record['url'][i],
-                'Active Ingredients': ingredient.strip()
-            }
-            r['uses'].append(d)
-    else:  # Assuming one active ingredient
-        r['uses']=[] 
-        d= {
-            'about': record['uses'],
-            'url': record['url'],
-            'Active Ingredients': record['Active Ingredients'].strip()
-        }
-        r['uses'].append(d)
-    r['id']= '_'.join([record['Approval Date'], record['Drug Name'], record['Submission'], record['Active Ingredients'], record['Submission Classification'], record['Submission Status']])
-
-    myrecords.append(r)
-
-print(f'# Saving the file {month:02}-{day:02}-{year}.json')
-with open(f'{month:02}-{day:02}-{year}.json', 'w') as f:
-    json.dump(myrecords, f, indent=4)
-
-r = requests.post(webhook, data = json.dumps(myrecords, indent=4), headers={'Content-Type': 'application/json'})
-
-
+print('SUCCESS')
 
