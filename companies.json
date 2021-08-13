@@ -10,5 +10,71 @@
         "ticker": "%5ECGQ",
         "price": "89.77 USD",
         "exchange": "NYS"
+    },
+    "ZHEJIANG HISUN PHARM": {
+        "name": "ZHEJIANG HISUN PHARM",
+        "ticker": "600267.SS",
+        "price": "13.03 CNY",
+        "exchange": "SHH"
+    },
+    "JAZZ": {
+        "name": "JAZZ",
+        "ticker": "JAZZ",
+        "price": "143.36 USD",
+        "exchange": "NMS"
+    },
+    "MERCK SHARP DOHME": {
+        "name": "MERCK SHARP DOHME",
+        "ticker": "MRK",
+        "price": "76.685 USD",
+        "exchange": "NYQ"
+    },
+    "STRIDES PHARMA": {
+        "name": "STRIDES PHARMA",
+        "ticker": "STAR.NS",
+        "price": "662.15 INR",
+        "exchange": "NSI"
+    },
+    "LANNETT CO INC": {
+        "name": "LANNETT CO INC",
+        "ticker": "LCI",
+        "price": "4.55 USD",
+        "exchange": "NYQ"
+    },
+    "AMTA": {
+        "name": "AMTA",
+        "ticker": "AMTA",
+        "price": "0.0 USD",
+        "exchange": "PNK"
+    },
+    "APOTEX INC": {
+        "name": "APOTEX INC",
+        "ticker": null,
+        "price": null,
+        "exchange": null
+    },
+    "MEITHEAL": {
+        "name": "MEITHEAL",
+        "ticker": null,
+        "price": null,
+        "exchange": null
+    },
+    "JAZZ PHARMS": {
+        "name": "JAZZ PHARMS",
+        "ticker": "JAZZ",
+        "price": "143.11 USD",
+        "exchange": "NMS"
+    },
+    "HOSPIRA INC": {
+        "name": "HOSPIRA INC",
+        "ticker": "HSP",
+        "price": "None None",
+        "exchange": "YHD"
+    },
+    "CONCORD BIOTECH LTD": {
+        "name": "CONCORD BIOTECH LTD",
+        "ticker": null,
+        "price": null,
+        "exchange": null
     }
 }

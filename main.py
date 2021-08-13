@@ -156,7 +156,12 @@ def getFDAData(month, year):
     df = df[df['Submission Status']=='Approval'] # filtering only fully approved submissions
     df = df.where(pd.notnull(df), '') # set None as empty to be able to concatinate in IDs
     df= df.rename(columns={'Submission Classification *': 'Submission Classification'})
-    df['id'] = pd.Series(df.fillna('').values.tolist()).str.join('_')
+    df = df.fillna(' ')
+    df['id'] = ''
+    for idx, row in df.iterrows():
+        rowid = row['Approval Date'] + '_' + row['Drug Name'] + '_' + row['Submission'] + '_' + row['Active Ingredients'] + '_' + row['Submission Classification']  + '_' + row['Submission Status']  + '_' + row['Company']
+        #print(rowid)
+        row['id'] = rowid
 
     return df
 
